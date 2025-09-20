@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JapaTV</title>
+<style>
+  body { font-family: Arial, sans-serif; background-color: #000; color: #fff; margin:0; padding:0; display:flex; flex-direction:column; align-items:center; min-height:100vh; }
+  h1 { margin:15px 0; font-size:24px; }
+  #player { width:95%; max-width:600px; height:250px; background-color:#000; margin-bottom:15px; }
+  #listaCanais { display:flex; flex-wrap:wrap; justify-content:center; gap:8px; width:95%; max-width:600px; margin-bottom:20px; }
+  .canal { background:#222; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:13px; text-align:center; min-width:110px; transition:0.2s; }
+  .canal.selected { background:#007bff; color:#fff; font-weight:bold; }
+  .box { width:95%; max-width:600px; margin:10px 0; }
+  textarea, input { width:100%; border-radius:6px; border:none; padding:10px; font-size:14px; margin:5px 0; }
+  button { padding:10px 15px; margin:5px; border:none; border-radius:6px; background:#007bff; color:#fff; font-size:15px; cursor:pointer; }
+  button:hover { background:#0056b3; }
+</style>
+</head>
+<body>
+
+<h1>JapaTV</h1>
+
+<video id="player" controls></video>
+<div id="listaCanais"></div>
+
+<div class="box">
+  <h3>Adicionar canal via link (m3u8)</h3>
+  <textarea id="linkUser" placeholder="Cole o link .m3u8 aqui"></textarea>
+  <button onclick="adicionarLink()">Adicionar Canal</button>
+</div>
+
+<div class="box">
+  <h3>Ou carregar arquivo M3U</h3>
+  <input type="file" id="fileInput" accept=".m3u,.m3u8" />
+</div>
+
+<div>
+  <button onclick="playerFullscreen()">Fullscreen</button>
+  <button onclick="toggleMute()">Mudo/Unmute</button>
+</div>
+
+<script>
+// Canais brasileiros conhecidos (HLS públicos/GRÁTIS)
+let canais = [
+  {nome: "Globo SP", url: "https://stmv1.srvstm.com/globosp/globosp/chunklist_w177866254.m3u8"},
+  {nome: "Record SP", url: "https://playplusspo-lh.akamaihd.net/i/pp_sp@350072/index_720_av-b.m3u8"},
+  {nome: "SBT SP", url: "https://evpp.mm.uol.com.br/geobloqueio/sbtsp/chunklist.m3u8"},
+  {nome: "Band SP", url: "https://evpp.mm.uol.com.br/geobloqueio/bandsp/chunklist.m3u8"},
+  {nome: "RedeTV!", url: "https://evpp.mm.uol.com.br/redetv1/redetv1/chunklist_w1309662344.m3u8"},
+  {nome: "TV Cultura", url: "https://streaming.cultura.com.br/live/cultura/chunklist.m3u8"},
+  {nome: "TV Brasil", url: "https://fegiptv.com.br/brasil/playlist.m3u8"},
+  {nome: "CNN Brasil", url: "https://stream.cnnbrasil.com.br/live/cnn.m3u8"},
+  {nome: "Record News", url: "https://playplusnews-lh.akamaihd.net/i/ppnws@377849/master.m3u8"},
+  {nome: "Band News", url: "https://live-us2.apa.playplus.com/bandnews/bandnews/master.m3u8"},
+  {nome: "SporTV", url: "https://globolive.akamaized.net/sportv/master.m3u8"},
+  {nome: "ESPN Brasil", url: "https://live2-espn.akamaized.net/hls/live.m3u8"},
+  {nome: "Prime Box Brazil", url: "https://boxbrazilplay.com/primebox.m3u8"},
+  {nome: "Music Box Brazil", url: "https://boxbrazilplay.com/musicbox.m3u8"},
+  {nome: "Travel Box Brazil", url: "https://boxbrazilplay.com/travelbox.m3u8"},
+  {nome: "Fashion TV BR", url: "https://boxbrazilplay.com/fashiontv.m3u8"},
+  {nome: "Canal Rural", url: "https://boxbrazilplay.com/canalrural.m3u8"},
+  {nome: "CNBB TV", url: "https://religiao.com.br/cnbbtv.m3u8"},
+  {nome: "TV Senado", url: "https://www.tv.senado.leg.br/senado.m3u8"},
+  {nome: "TV Câmara", url: "https://tv.camara.leg.br/playlist.m3u8"},
+  {nome: "RTP Internacional", url: "https://rtp.pt/play/live/rtpinternacional.m3u8"},
+  {nome: "Euronews PT", url: "https://euronews-euronews-world-1-pt.samsung.wurl.tv/manifest/playlist.m3u8"},
+  {nome: "CNN Portugal", url: "https://cnnportugal-live.m3u8"},
+  {nome: "SIC", url: "https://tv.sic.pt/siclive/playlist.m3u8"},
+  {nome: "TVI", url: "https://tv.tvi.pt/tvi-live/playlist.m3u8"},
+  {nome: "RTP2", url: "https://rtp.pt/play/live/rtp2.m3u8"},
+  {nome: "RTP Memória", url: "https://rtp.pt/play/live/rtpmemoria.m3u8"},
+  {nome: "RTP Açores", url: "https://rtp.pt/play/live/rtpacores.m3u8"},
+  {nome: "RTP Madeira", url: "https://rtp.pt/play/live/rtpmadeira.m3u8"},
+  {nome: "RTP África", url: "https://rtp.pt/play/live/rtpafrica.m3u8"},
+  {nome: "TV Cultura SP", url: "https://streaming.culturasp.com.br/playlist.m3u8"},
+  {nome: "TV Assembleia SP", url: "https://cmais.com.br/assembleia_sp.m3u8"},
+  {nome: "TV Câmara SP", url: "https://cmais.com.br/camara_sp.m3u8"},
+  {nome: "TV Justiça", url: "https://tvjustica.stream.mpd.m3u8"},
+  {nome: "TV Escola", url: "https://tvescola.gov.br/live.m3u8"},
+  {nome: "TV Aparecida", url: "https://tvcb1.aparecida.m3u8"},
+  // ... adicione mais se desejar
+];
+
+const lista = document.getElementById("listaCanais");
+const player = document.getElementById("player");
+let canalSelecionado = 0;
+
+function renderCanais() {
+  lista.innerHTML = "";
+  canais.forEach((c, i) => {
+    const btn = document.createElement("button");
+    btn.className = "canal";
+    btn.innerText = c.nome;
+    btn.onclick = () => selecionarCanal(i);
+    lista.appendChild(btn);
+  });
+  selecionarCanal(0);
+}
+
+function selecionarCanal(i) {
+  canalSelecionado = i;
+  document.querySelectorAll(".canal").forEach(el => el.classList.remove("selected"));
+  document.querySelectorAll(".canal")[i].classList.add("selected");
+  player.src = canais[i].url;
+  player.play().catch(e => console.log("Erro play:", e));
+}
+
+function adicionarLink(){
+  const txt = document.getElementById("linkUser").value.trim();
+  if (!txt) return alert("Cole um link válido.");
+  canais.push({nome: "Canal user", url: txt});
+  renderCanais();
+}
+
+document.getElementById("fileInput").addEventListener("change", function(e){
+  const file = e.target.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = function(ev){
+    ev.target.result.split("\n").forEach((l, idx) => {
+      if (l.startsWith("http")) canais.push({nome:"CanalArquivo"+(idx+1), url:l});
+    });
+    renderCanais();
+  };
+  r.readAsText(file);
+});
+
+function playerFullscreen(){
+  if (player.requestFullscreen) player.requestFullscreen();
+  else if (player.webkitEnterFullscreen) player.webkitEnterFullscreen();
+}
+function toggleMute(){
+  player.muted = !player.muted;
+}
+
+renderCanais();
+</script>
+</body>
+</html>
