@@ -41,7 +41,7 @@
 </div>
 
 <script>
-// Canais brasileiros conhecidos (HLS p˙blicos/GR¡TIS)
+// Canais brasileiros conhecidos (HLS p√∫blicos/GR√ÅTIS)
 let canais = [
   {nome: "Globo SP", url: "https://stmv1.srvstm.com/globosp/globosp/chunklist_w177866254.m3u8"},
   {nome: "Record SP", url: "https://playplusspo-lh.akamaihd.net/i/pp_sp@350072/index_720_av-b.m3u8"},
@@ -62,21 +62,21 @@ let canais = [
   {nome: "Canal Rural", url: "https://boxbrazilplay.com/canalrural.m3u8"},
   {nome: "CNBB TV", url: "https://religiao.com.br/cnbbtv.m3u8"},
   {nome: "TV Senado", url: "https://www.tv.senado.leg.br/senado.m3u8"},
-  {nome: "TV C‚mara", url: "https://tv.camara.leg.br/playlist.m3u8"},
+  {nome: "TV C√¢mara", url: "https://tv.camara.leg.br/playlist.m3u8"},
   {nome: "RTP Internacional", url: "https://rtp.pt/play/live/rtpinternacional.m3u8"},
   {nome: "Euronews PT", url: "https://euronews-euronews-world-1-pt.samsung.wurl.tv/manifest/playlist.m3u8"},
   {nome: "CNN Portugal", url: "https://cnnportugal-live.m3u8"},
   {nome: "SIC", url: "https://tv.sic.pt/siclive/playlist.m3u8"},
   {nome: "TVI", url: "https://tv.tvi.pt/tvi-live/playlist.m3u8"},
   {nome: "RTP2", url: "https://rtp.pt/play/live/rtp2.m3u8"},
-  {nome: "RTP MemÛria", url: "https://rtp.pt/play/live/rtpmemoria.m3u8"},
-  {nome: "RTP AÁores", url: "https://rtp.pt/play/live/rtpacores.m3u8"},
+  {nome: "RTP Mem√≥ria", url: "https://rtp.pt/play/live/rtpmemoria.m3u8"},
+  {nome: "RTP A√ßores", url: "https://rtp.pt/play/live/rtpacores.m3u8"},
   {nome: "RTP Madeira", url: "https://rtp.pt/play/live/rtpmadeira.m3u8"},
-  {nome: "RTP ¡frica", url: "https://rtp.pt/play/live/rtpafrica.m3u8"},
+  {nome: "RTP √Åfrica", url: "https://rtp.pt/play/live/rtpafrica.m3u8"},
   {nome: "TV Cultura SP", url: "https://streaming.culturasp.com.br/playlist.m3u8"},
   {nome: "TV Assembleia SP", url: "https://cmais.com.br/assembleia_sp.m3u8"},
-  {nome: "TV C‚mara SP", url: "https://cmais.com.br/camara_sp.m3u8"},
-  {nome: "TV JustiÁa", url: "https://tvjustica.stream.mpd.m3u8"},
+  {nome: "TV C√¢mara SP", url: "https://cmais.com.br/camara_sp.m3u8"},
+  {nome: "TV Justi√ßa", url: "https://tvjustica.stream.mpd.m3u8"},
   {nome: "TV Escola", url: "https://tvescola.gov.br/live.m3u8"},
   {nome: "TV Aparecida", url: "https://tvcb1.aparecida.m3u8"},
   // ... adicione mais se desejar
@@ -108,7 +108,7 @@ function selecionarCanal(i) {
 
 function adicionarLink(){
   const txt = document.getElementById("linkUser").value.trim();
-  if (!txt) return alert("Cole um link v·lido.");
+  if (!txt) return alert("Cole um link v√°lido.");
   canais.push({nome: "Canal user", url: txt});
   renderCanais();
 }
